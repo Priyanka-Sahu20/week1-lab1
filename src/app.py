@@ -5,6 +5,7 @@ A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
 
+import email
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
@@ -39,6 +40,43 @@ activities = {
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
     }
+    ,
+        "Basketball": {
+            "description": "Competitive basketball team and practice sessions",
+            "schedule": "Mondays and Wednesdays, 4:00 PM - 5:30 PM",
+            "max_participants": 15,
+            "participants": ["alex@mergington.edu"]
+        },
+        "Volleyball": {
+            "description": "Volleyball training and friendly matches",
+            "schedule": "Tuesdays and Thursdays, 4:00 PM - 5:30 PM",
+            "max_participants": 14,
+            "participants": ["sarah@mergington.edu"]
+        },
+        "Debate Club": {
+            "description": "Develop public speaking and argumentation skills",
+            "schedule": "Wednesdays, 3:30 PM - 5:00 PM",
+            "max_participants": 16,
+            "participants": ["james@mergington.edu"]
+        },
+        "Science Olympiad": {
+            "description": "Compete in science competitions and experiments",
+            "schedule": "Fridays, 3:30 PM - 5:00 PM",
+            "max_participants": 18,
+            "participants": ["rachel@mergington.edu"]
+        },
+        "Drama Club": {
+            "description": "Perform in theatrical productions and improve acting skills",
+            "schedule": "Mondays and Thursdays, 3:30 PM - 5:00 PM",
+            "max_participants": 20,
+            "participants": ["maya@mergington.edu"]
+        },
+        "Art Studio": {
+            "description": "Painting, drawing, and sculpture techniques",
+            "schedule": "Tuesdays and Fridays, 3:30 PM - 5:00 PM",
+            "max_participants": 15,
+            "participants": ["lucas@mergington.edu"]
+        }
 }
 
 
@@ -61,6 +99,13 @@ def signup_for_activity(activity_name: str, email: str):
 
     # Get the specific activity
     activity = activities[activity_name]
+
+    # Validate student is not already signed up
+    if email in activity["participants"]: 
+        raise HTTPException(status_code=400, detail="Student already signed up")
+    # Validate activity is not full
+    if len(activity["participants"]) >= activity["max_participants"]:
+        raise HTTPException(status_code=400, detail="Activity is full")
 
     # Add student
     activity["participants"].append(email)
